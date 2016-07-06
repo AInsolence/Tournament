@@ -21,7 +21,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     cursor = connect().cursor()
     cursor.execute('DELETE FROM players;')
-    return
+    return 'Players table clean!'
 
 def countPlayers():
     """Returns the number of players currently registered."""
@@ -39,6 +39,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    cursor = connect().cursor()
+    QUERY = 'INSERT INTO players VALUES ('%s');'
+    value = (name,)
+    cursor.execute(QUERY, value)    
+    return 'New player added!'
 
 
 def playerStandings():
@@ -54,6 +59,10 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    cursor = connect().cursor()
+    cursor.execute('SELECT count(id) FROM players;')
+    return cursor.fetchall()
+
 
 
 def reportMatch(winner, loser):
