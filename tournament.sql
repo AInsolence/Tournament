@@ -11,8 +11,8 @@ create database tournament;
 \c tournament
 
 create table players (
-	id serial primary key,
-	name text);
+	name text, id serial primary key
+	);
 
 create table players_scores (
 	player serial REFERENCES players(id),
