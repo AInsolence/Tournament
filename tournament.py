@@ -16,14 +16,17 @@ def deleteMatches():
     cursor = connect().cursor()
     cursor.execute('DELETE FROM tournament_1;')
     connect().commit()
+    connect().close()
     return
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    cursor = connect().cursor()
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute('DELETE FROM players;')
-    connect().commit()
-    return 0
+    conn.commit()
+    conn.close()
+    return
 
 def countPlayers():
     """Returns the number of players currently registered."""
@@ -42,12 +45,14 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    cursor = connect().cursor()
-    QUERY = "INSERT INTO players VALUES (%s);"
-    value = (name,)
-    cursor.execute(QUERY, value)
-    connect().commit()
-    return 'New player added!'
+    connect = psycopg2.connect("dbname=tournament")
+    cursor = connect.cursor()
+    QUERY = 'insert into players values (%s);'
+    data = (name,)
+    cursor.execute(QUERY, data)
+    connect.commit()
+    connect.close()
+    return 
 
 
 def playerStandings():
