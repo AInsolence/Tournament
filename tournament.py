@@ -13,10 +13,11 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    cursor = connect().cursor()
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute('DELETE FROM tournament_1;')
-    connect().commit()
-    connect().close()
+    conn.commit()
+    conn.close()
     return
 
 def deletePlayers():
@@ -68,8 +69,9 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    cursor = connect().cursor()
-    cursor.execute('SELECT count(id) FROM players;')
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, name, wins, games FROM players LEFT JOIN players_scores ON players.name = players_scores.player order by wins;')
     return cursor.fetchall()
 
 
@@ -81,7 +83,14 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    conn = connect()
+    cursor = conn.cursor()
+    QUERY = ('INSERT INTO tournament_1 (player_1, player_2, winner_1) values (%s, %s, %s);' )
+    data = (winner, loser, winner_1)
+    cursor.execute(QUERY, data)
+    conn.commit()
+    conn.close()
+    return
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
