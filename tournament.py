@@ -45,13 +45,13 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    connect = psycopg2.connect("dbname=tournament")
-    cursor = connect.cursor()
+    conn = connect()
+    cursor = conn.cursor()
     QUERY = 'insert into players values (%s);'
     data = (name,)
     cursor.execute(QUERY, data)
-    connect.commit()
-    connect.close()
+    conn.commit()
+    conn.close()
     return 
 
 
