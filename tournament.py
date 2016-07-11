@@ -16,6 +16,7 @@ def deleteMatches():
     conn = connect()
     cursor = conn.cursor()
     cursor.execute('DELETE FROM tournament_1;')
+    cursor.execute('UPDATE players_scores SET games = 0, wins = 0, loses = 0, draws = 0, scores = 0;')
     conn.commit()
     conn.close()
     return
@@ -24,6 +25,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
     cursor = conn.cursor()
+    cursor.execute('DELETE FROM players_scores;')
     cursor.execute('DELETE FROM players;')
     conn.commit()
     conn.close()
@@ -48,12 +50,17 @@ def registerPlayer(name):
     """
     conn = connect()
     cursor = conn.cursor()
-    QUERY = 'insert into players values (%s);'
+    QUERY = 'INSERT INTO players values (%s) RETURNING id;'
     data = (name,)
     cursor.execute(QUERY, data)
     conn.commit()
+    id_of_new_row = (cursor.fetchone()[0],)
+    QUERY2 = ('insert into players_scores values (%s, 0, 0, 0, 0, 0);') 
+    ### inserting new player(id) with clean statistic to players_scores table ###
+    cursor.execute(QUERY2, id_of_new_row)
+    conn.commit()
     conn.close()
-    return 
+    return
 
 
 def playerStandings():
@@ -71,7 +78,7 @@ def playerStandings():
     """
     conn = connect()
     cursor = conn.cursor()
-    cursor.execute('SELECT id, name, wins, games FROM players LEFT JOIN players_scores ON players.name = players_scores.player order by wins;')
+    cursor.execute('SELECT id, name, wins, games FROM players LEFT JOIN players_scores ON players.id = players_scores.player order by wins desc;')
     return cursor.fetchall()
 
 
@@ -85,12 +92,17 @@ def reportMatch(winner, loser):
     """
     conn = connect()
     cursor = conn.cursor()
-    QUERY = ('INSERT INTO tournament_1 (player_1, player_2, winner_1) values (%s, %s, %s);' )
-    data = (winner, loser, winner_1)
+    QUERY = 'INSERT INTO tournament_1 (player_1, player_2, winner, draw) values (%s, %s, %s, 0);'
+    QUERY2 = 'UPDATE players_scores SET games = games + 1, wins = wins + 1 where player = %s;'
+    QUERY3 = 'UPDATE players_scores SET games = games + 1 where player = %s;'
+    data = (winner, loser, winner)
+    data2 = [(winner,), (loser,)]
     cursor.execute(QUERY, data)
+    cursor.execute(QUERY2, data2[0])
+    cursor.execute(QUERY3, data2[1])
     conn.commit()
     conn.close()
-    return
+    return "Match is record!"
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
