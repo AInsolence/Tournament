@@ -94,7 +94,7 @@ def reportMatch(winner, loser):
     cursor = conn.cursor()
     QUERY = 'INSERT INTO tournament_1 (player_1, player_2, winner, draw) values (%s, %s, %s, 0);'
     QUERY2 = 'UPDATE players_scores SET games = games + 1, wins = wins + 1 where player = %s;'
-    QUERY3 = 'UPDATE players_scores SET games = games + 1 where player = %s;'
+    QUERY3 = 'UPDATE players_scores SET games = games + 1, loses = loses + 1 where player = %s;'
     data = (winner, loser, winner)
     data2 = [(winner,), (loser,)]
     cursor.execute(QUERY, data)
