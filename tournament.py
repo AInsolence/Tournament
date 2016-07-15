@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # 
 # tournament.py -- implementation of a Swiss-system tournament
-#
+# dev branch
 
 import psycopg2
 
@@ -119,5 +119,20 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    players = playerStandings()
+    pairings = []
+    n = 0
+    if len(players) % 2 == 0:
+        while n != len(players):
+            pair = (players[n][0], players[n][1], players[n + 1][0], players[n + 1][1])
+            pairings.append(pair)
+            n += 2
+    else:
+        while n != len(players) - 1:
+            pair = (players[n][0], players[n][1], players[n + 1][0], players[n + 1][1])
+            pairings.append(pair)
+            n += 2
+        single_player = (players[-1][0], players[-1][1], 'id', 'buy win in this tour')
+        pairings.append(single_player)
 
-
+    return pairings
