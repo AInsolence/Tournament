@@ -6,22 +6,24 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
-create database tournament;
+-- This file create PSQL database structure to store information about players, match results and scores.
+
+DROP DATABASE tournament;
+
+CREATE DATABASE tournament;
 
 \c tournament
 
-create table players (
-	name text , id serial primary key
+CREATE TABLE players (
+	name text , id serial PRIMARY KEY
 	);
 
-create table players_scores (
-	player integer REFERENCES players(id),
-	games integer, wins integer, loses integer, draws integer, scores integer);
-
-create table tournament_1 (
+CREATE TABLE matches (
+	match_number serial PRIMARY KEY,
 	player_1 integer REFERENCES players(id),
 	player_2 integer REFERENCES players(id),
 	winner integer, draw integer);
 
-
-
+CREATE TABLE players_scores (
+	player integer REFERENCES players(id),
+	games integer, wins integer, loses integer, draws integer, scores integer);

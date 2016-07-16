@@ -2,38 +2,42 @@
 # 
 # tournament.py -- implementation of a Swiss-system tournament
 # master branch
+# Python module to manage tournament database.
+# Use psycopg2 module to work with Postgre SQL. DOCUMENTATION ## http://initd.org/psycopg/docs/usage.html ##
 
 import psycopg2
 
 
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+def connect(database_name="tournament"):
+    """Connect to tournament database"""
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("Unfortunately its impossible to connect to tournament database.")
+
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM tournament_1;')
-    cursor.execute('UPDATE players_scores SET games = 0, wins = 0, loses = 0, draws = 0, scores = 0;')
-    conn.commit()
-    conn.close()
+    db, cursor = connect()
+    cursor.execute('TRUNCATE matches CASCADE;')
+    db.commit()
+    db.close()
     return
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM players_scores;')
-    cursor.execute('DELETE FROM players;')
-    conn.commit()
-    conn.close()
+    db, cursor = connect()
+    cursor.execute('TRUNCATE players CASCADE;')
+    db.commit()
+    db.close()
     return
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    cursor = connect().cursor()
+    db, cursor = connect()
     cursor.execute('SELECT count(id) FROM players;')
     res = cursor.fetchone()
     return res[0]
@@ -48,18 +52,17 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    conn = connect()
-    cursor = conn.cursor()
+    db, cursor = connect()
     QUERY = 'INSERT INTO players values (%s) RETURNING id;'
     data = (name,)
     cursor.execute(QUERY, data)
-    conn.commit()
+    db.commit()
     id_of_new_row = (cursor.fetchone()[0],)
     QUERY2 = ('insert into players_scores values (%s, 0, 0, 0, 0, 0);') 
     ### inserting new player(id) with clean statistic to players_scores table ###
     cursor.execute(QUERY2, id_of_new_row)
-    conn.commit()
-    conn.close()
+    db.commit()
+    db.close()
     return
 
 
@@ -76,8 +79,7 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    conn = connect()
-    cursor = conn.cursor()
+    db, cursor = connect()
     cursor.execute('SELECT id, name, wins, games FROM players LEFT JOIN players_scores ON players.id = players_scores.player order by wins desc;')
     return cursor.fetchall()
 
@@ -90,9 +92,8 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    conn = connect()
-    cursor = conn.cursor()
-    QUERY = 'INSERT INTO tournament_1 (player_1, player_2, winner, draw) values (%s, %s, %s, 0);'
+    db, cursor = connect()
+    QUERY = 'INSERT INTO matches (player_1, player_2, winner, draw) values (%s, %s, %s, 0);'
     QUERY2 = 'UPDATE players_scores SET games = games + 1, wins = wins + 1 where player = %s;'
     QUERY3 = 'UPDATE players_scores SET games = games + 1, loses = loses + 1 where player = %s;'
     data = (winner, loser, winner)
@@ -100,8 +101,8 @@ def reportMatch(winner, loser):
     cursor.execute(QUERY, data)
     cursor.execute(QUERY2, data2[0])
     cursor.execute(QUERY3, data2[1])
-    conn.commit()
-    conn.close()
+    db.commit()
+    db.close()
     return "Match is record!"
  
 def swissPairings():
