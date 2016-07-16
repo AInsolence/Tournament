@@ -1,0 +1,20 @@
+Swiss Tournament manage system.
+
+Free OpenSource programm.
+
+This module can be used to manage a swiss tournament system.
+
+Files:
+		1)tournament.sql file contained the database structure
+		2)tournament.py file contained python module to manage data in tournament DB, use psycopg2 external module
+		3)tournament_test.py contained python module test that all system is working in a right way.
+		4)you also can ignore func_test.py and func_test_2.py files - it used to development purposes.
+
+To use this system you should have:
+
+		- python 2.7 or higher
+		- postgre SQL 9.3.13 version
+		- psycopg2 python module
+
+Authors GitHub nickname: AInsolence
+email: antoniovbak14@gmail.com

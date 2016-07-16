@@ -8,7 +8,7 @@
 
 -- This file create PSQL database structure to store information about players, match results and scores.
 
-DROP DATABASE tournament;
+DROP DATABASE IF EXISTS tournament;
 
 CREATE DATABASE tournament;
 
