@@ -19,11 +19,12 @@ CREATE TABLE players (
 	);
 
 CREATE TABLE matches (
-	match_number serial PRIMARY KEY,
-	player_1 integer REFERENCES players(id),
-	player_2 integer REFERENCES players(id),
-	winner integer, draw integer);
+	winner integer REFERENCES players(id),
+	loser integer REFERENCES players(id), draw boolean, 
+	match_number serial PRIMARY KEY);
 
-CREATE TABLE players_scores (
-	player integer REFERENCES players(id),
-	games integer, wins integer, loses integer, draws integer, scores integer);
+CREATE VIEW players_scores AS SELECT id, (SELECT COUNT(winner) AS win FROM matches WHERE winner = id) AS wins, (SELECT COUNT(loser) AS lose FROM matches WHERE loser = id) AS loses, (SELECT COUNT(*) AS games FROM matches WHERE winner = id OR loser = id) AS games FROM players; 
+
+
+
+

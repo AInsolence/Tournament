@@ -16,5 +16,10 @@ To use this system you should have:
 		- postgre SQL 9.3.13 version
 		- psycopg2 python module
 
+Links:
+		- python docs: https://docs.python.org/3.4/tutorial/index.html
+		- Postgre SQL docs: https://www.postgresql.org/docs/9.3/static/index.html
+		- psycopg2 docs: http://initd.org/psycopg/docs/usage.html
+
 Authors GitHub nickname: AInsolence
 email: antoniovbak14@gmail.com
